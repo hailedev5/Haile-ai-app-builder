@@ -1,0 +1,6 @@
+{
+  "name": "Haile AI",
+  "description": "An intelligent, adaptive conversational AI companion and reasoning engine with multi-persona modes, voice synthesis, and vision capabilities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
