@@ -9,7 +9,7 @@ import {
   Check,
   ArrowRight,
 } from 'lucide-react';
-import { PersonaId } from '../types';
+import { PersonaId, Persona } from '../types';
 import { HAILE_PERSONAS } from '../data/personas';
 import { HaileLogo } from './HaileLogo';
 
@@ -19,6 +19,7 @@ interface PersonaModalProps {
   currentPersona: PersonaId;
   onSelectPersona: (persona: PersonaId) => void;
   onSelectPrompt: (prompt: string, persona: PersonaId) => void;
+  customPersonas?: Persona[];
 }
 
 export const PersonaModal: React.FC<PersonaModalProps> = ({
@@ -27,8 +28,11 @@ export const PersonaModal: React.FC<PersonaModalProps> = ({
   currentPersona,
   onSelectPersona,
   onSelectPrompt,
+  customPersonas = [],
 }) => {
   if (!isOpen) return null;
+
+  const allPersonas = [...HAILE_PERSONAS, ...customPersonas];
 
   const getPersonaIcon = (id: PersonaId) => {
     switch (id) {
@@ -42,6 +46,8 @@ export const PersonaModal: React.FC<PersonaModalProps> = ({
         return <Compass className="w-5 h-5 text-blue-400" />;
       case 'executive':
         return <ShieldCheck className="w-5 h-5 text-rose-400" />;
+      default:
+        return <Sparkles className="w-5 h-5 text-cyan-400" />;
     }
   };
 
@@ -74,7 +80,7 @@ export const PersonaModal: React.FC<PersonaModalProps> = ({
 
         {/* Personas List */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {HAILE_PERSONAS.map((p) => {
+          {allPersonas.map((p) => {
             const isSelected = p.id === currentPersona;
             return (
               <div

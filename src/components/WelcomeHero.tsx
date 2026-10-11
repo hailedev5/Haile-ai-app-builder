@@ -29,6 +29,8 @@ export const WelcomeHero: React.FC<WelcomeHeroProps> = ({
         return <Compass className="w-4 h-4 text-blue-400" />;
       case 'executive':
         return <ShieldCheck className="w-4 h-4 text-rose-400" />;
+      default:
+        return <Sparkles className="w-4 h-4 text-cyan-400" />;
     }
   };
 

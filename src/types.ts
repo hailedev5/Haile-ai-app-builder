@@ -1,4 +1,4 @@
-export type PersonaId = 'genius' | 'speed' | 'creative' | 'sage' | 'executive';
+export type PersonaId = 'genius' | 'speed' | 'creative' | 'sage' | 'executive' | string;
 
 export interface Persona {
   id: PersonaId;
@@ -10,6 +10,39 @@ export interface Persona {
   accentGradient: string;
   temperature: number;
   samplePrompts: string[];
+  isCustom?: boolean;
+  systemPrompt?: string;
+}
+
+export type GeminiModelId = 'gemini-3.8-flash' | 'gemini-2.5-flash' | 'gemini-2.5-pro';
+
+export interface GroundingSource {
+  title: string;
+  url: string;
+  domain?: string;
+}
+
+export interface AttachedFile {
+  name: string;
+  content: string;
+  size: number;
+  type: string;
+}
+
+export interface AttachedAudio {
+  data: string; // base64
+  mimeType: string;
+  fileName: string;
+  duration?: number;
+}
+
+export interface Artifact {
+  id: string;
+  title: string;
+  language: string;
+  content: string;
+  type: 'code' | 'markdown' | 'html' | 'svg';
+  createdAt: number;
 }
 
 export interface ChatMessage {
@@ -22,9 +55,23 @@ export interface ChatMessage {
     mimeType: string;
     previewUrl?: string;
   };
+  audio?: AttachedAudio;
+  documents?: AttachedFile[];
+  generatedImage?: {
+    url: string;
+    prompt: string;
+  };
   personaUsed?: PersonaId;
+  modelUsed?: GeminiModelId;
   isStreaming?: boolean;
   starred?: boolean;
+  sources?: GroundingSource[];
+  thinking?: string;
+  isThinkingExpanded?: boolean;
+  alternatives?: string[]; // alternative responses for regeneration
+  currentAltIndex?: number;
+  wordCount?: number;
+  tokenCount?: number;
 }
 
 export interface ChatSession {
@@ -35,6 +82,7 @@ export interface ChatSession {
   persona: PersonaId;
   messages: ChatMessage[];
   pinned?: boolean;
+  tags?: string[];
 }
 
 export interface AppSettings {
@@ -44,4 +92,18 @@ export interface AppSettings {
   voiceSpeed: number;
   soundEffects: boolean;
   streamResponses: boolean;
+  defaultModel: GeminiModelId;
+  webSearchDefault: boolean;
+  deepThinkingDefault: boolean;
+  customPersonas?: Persona[];
+}
+
+export interface PromptTemplate {
+  id: string;
+  category: 'Coding & Architecture' | 'Writing & Content' | 'Business & Strategy' | 'Science & Math' | 'Languages & Culture' | 'Productivity';
+  title: string;
+  description: string;
+  prompt: string;
+  icon: string;
+  tags: string[];
 }

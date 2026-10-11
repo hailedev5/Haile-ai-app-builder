@@ -38,7 +38,12 @@ Provide reflective wisdom, philosophical perspective, and cross-cultural depth. 
 Act as a seasoned chief strategist and executive advisor. Frame advice around ROI, strategic positioning, risk mitigation, decision matrices, leadership communication, and crisp executive summaries.`,
 };
 
-function buildSystemInstruction(personaKey: string = "genius", customNotes: string = ""): string {
+function buildSystemInstruction(
+  personaKey: string = "genius",
+  customNotes: string = "",
+  customPersonaPrompt?: string,
+  deepThinking: boolean = false
+): string {
   const baseInstruction = `You are Haile AI (pronounced "High-leh" AI), an extraordinary next-generation AI assistant and cognitive intelligence engine.
 You were created to provide human-like brilliance, deep authenticity, warmth, and masterful problem-solving capabilities.
 
@@ -47,12 +52,23 @@ Core Tenets of Haile AI:
 2. Tone & Voice: Sophisticated yet approachable, confident without arrogance, warmly engaging, and articulate. Never sound like a generic canned chatbot.
 3. Clarity & Formatting: Structure complex answers using clean markdown, informative headings, bold key concepts, bulleted lists, and well-commented code snippets where relevant.
 4. Problem Solving: When addressing code, technical problems, or calculations, be exceptionally rigorous, accurate, and proactive about edge cases.
-5. Cultural & Global Awareness: You possess broad cultural sensitivity and multilingual capability (including Amharic, French, Spanish, German, Swahili, Arabic, etc.).`;
+5. Visuals & Diagrams: When explaining architecture, flows, state machines, or hierarchies, use Mermaid code blocks (e.g. \`\`\`mermaid\\ngraph TD...\\n\`\`\`) to provide visual diagrams.
+6. Cultural & Global Awareness: You possess broad cultural sensitivity and multilingual capability (including Amharic, French, Spanish, German, Swahili, Arabic, etc.).`;
 
-  const personaInstruction = PERSONA_INSTRUCTIONS[personaKey] || PERSONA_INSTRUCTIONS.genius;
-  const custom = customNotes ? `\nUser Custom Guidance for Haile:\n${customNotes}` : "";
+  let personaInstruction = customPersonaPrompt || PERSONA_INSTRUCTIONS[personaKey] || PERSONA_INSTRUCTIONS.genius;
+  let custom = customNotes ? `\nUser Custom Guidance for Haile:\n${customNotes}` : "";
 
-  return `${baseInstruction}\n\n${personaInstruction}${custom}`;
+  let thinkingPrompt = "";
+  if (deepThinking) {
+    thinkingPrompt = `\n\nCRITICAL DEEP THINKING DIRECTIVE:
+You must first plan and deconstruct your thoughts within an explicit XML block:
+<thinking>
+[Detailed step-by-step reasoning, hypotheses, edge cases, trade-offs, and verification steps]
+</thinking>
+After the closing </thinking> tag, present your final polished answer to the user.`;
+  }
+
+  return `${baseInstruction}\n\n${personaInstruction}${custom}${thinkingPrompt}`;
 }
 
 // Health check endpoint
@@ -61,15 +77,18 @@ app.get("/api/health", (_req, res) => {
   res.json({
     status: "ok",
     ai: "Haile AI",
-    version: "2.5-genesis",
+    version: "3.0-enterprise",
     hasApiKey: hasKey,
+    supportedModels: ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-pro"],
   });
 });
 
-// Format incoming messages to GenAI contents structure
+// Format incoming messages to GenAI contents structure with multimodal (images, audio, docs)
 function formatMessagesForGenAI(messages: any[]) {
   return messages.map((m) => {
     const parts: any[] = [];
+    
+    // Image attachment
     if (m.image && m.image.data && m.image.mimeType) {
       parts.push({
         inlineData: {
@@ -78,9 +97,31 @@ function formatMessagesForGenAI(messages: any[]) {
         },
       });
     }
+
+    // Audio attachment
+    if (m.audio && m.audio.data && m.audio.mimeType) {
+      parts.push({
+        inlineData: {
+          mimeType: m.audio.mimeType,
+          data: m.audio.data,
+        },
+      });
+    }
+
+    // Attached text/code documents
+    if (m.documents && Array.isArray(m.documents) && m.documents.length > 0) {
+      m.documents.forEach((doc: any) => {
+        parts.push({
+          text: `\n--- Attached Document: "${doc.name}" (${doc.size} bytes) ---\n${doc.content}\n--- End of Document ---\n`,
+        });
+      });
+    }
+
+    // Text content
     if (m.content) {
       parts.push({ text: m.content });
     }
+
     return {
       role: m.role === "assistant" ? "model" : "user",
       parts,
@@ -88,14 +129,23 @@ function formatMessagesForGenAI(messages: any[]) {
   });
 }
 
-// SSE Streaming chat endpoint
+// SSE Streaming chat endpoint with Model selection, Google Search Grounding & Deep Thinking
 app.post("/api/chat/stream", async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
   res.flushHeaders?.();
 
-  const { messages, persona = "genius", customNotes = "", temperature = 0.7 } = req.body;
+  const {
+    messages,
+    persona = "genius",
+    customNotes = "",
+    customPersonaPrompt,
+    temperature = 0.7,
+    model = "gemini-3.8-flash",
+    searchGrounding = false,
+    deepThinking = false,
+  } = req.body;
 
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
     res.write(`data: ${JSON.stringify({ error: "No messages provided." })}\n\n`);
@@ -103,25 +153,67 @@ app.post("/api/chat/stream", async (req, res) => {
     return;
   }
 
+  // Model validation
+  const validModels = ["gemini-3.8-flash", "gemini-2.5-flash", "gemini-2.5-pro"];
+  const chosenModel = validModels.includes(model) ? model : "gemini-3.8-flash";
+
   try {
     const ai = getGenAIClient();
-    const systemInstruction = buildSystemInstruction(persona, customNotes);
+    const systemInstruction = buildSystemInstruction(persona, customNotes, customPersonaPrompt, deepThinking);
     const contents = formatMessagesForGenAI(messages);
 
+    const config: any = {
+      systemInstruction,
+      temperature: Number(temperature) || 0.7,
+    };
+
+    // Google Search Grounding
+    if (searchGrounding) {
+      config.tools = [{ googleSearch: {} }];
+    }
+
     const streamResponse = await ai.models.generateContentStream({
-      model: "gemini-3.8-flash",
+      model: chosenModel,
       contents,
-      config: {
-        systemInstruction,
-        temperature: Number(temperature) || 0.7,
-      },
+      config,
     });
+
+    const gatheredSources: { title: string; url: string; domain?: string }[] = [];
 
     for await (const chunk of streamResponse) {
       const text = chunk.text;
+      
+      // Extract grounding metadata if present
+      const candidates = (chunk as any).candidates;
+      if (candidates && candidates[0]?.groundingMetadata?.groundingChunks) {
+        const chunks = candidates[0].groundingMetadata.groundingChunks;
+        for (const c of chunks) {
+          if (c.web?.uri) {
+            let domain = "";
+            try {
+              domain = new URL(c.web.uri).hostname.replace(/^www\./, "");
+            } catch {}
+            gatheredSources.push({
+              title: c.web.title || domain || "Web Source",
+              url: c.web.uri,
+              domain,
+            });
+          }
+        }
+      }
+
       if (text) {
         res.write(`data: ${JSON.stringify({ text })}\n\n`);
       }
+    }
+
+    // Send collected search sources if any
+    if (gatheredSources.length > 0) {
+      // Deduplicate sources by URL
+      const uniqueSources = gatheredSources.filter(
+        (s, idx, arr) => arr.findIndex((x) => x.url === s.url) === idx
+      );
+      res.write(`data: ${JSON.stringify({ sources: uniqueSources })}\n\n`);
     }
 
     res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
@@ -131,6 +223,159 @@ app.post("/api/chat/stream", async (req, res) => {
     const errorMessage = error?.message || "An unexpected error occurred while communicating with Haile AI.";
     res.write(`data: ${JSON.stringify({ error: errorMessage })}\n\n`);
     res.end();
+  }
+});
+
+// AI Image Generation Endpoint
+app.post("/api/generate-image", async (req, res) => {
+  const { prompt, aspectRatio = "1:1" } = req.body;
+  if (!prompt || !prompt.trim()) {
+    res.status(400).json({ error: "Image prompt is required." });
+    return;
+  }
+
+  try {
+    const ai = getGenAIClient();
+
+    // First attempt with Imagen 3
+    try {
+      const response = await ai.models.generateImages({
+        model: "imagen-3.0-generate-002",
+        prompt: prompt.trim(),
+        config: {
+          numberOfImages: 1,
+          aspectRatio: aspectRatio as any,
+          outputMimeType: "image/jpeg",
+        },
+      });
+
+      const base64Bytes = response.generatedImages?.[0]?.image?.imageBytes;
+      if (base64Bytes) {
+        res.json({
+          imageUrl: `data:image/jpeg;base64,${base64Bytes}`,
+          prompt,
+          source: "imagen-3.0",
+        });
+        return;
+      }
+    } catch (imagenErr: any) {
+      console.warn("Imagen generation error, attempting fallback:", imagenErr?.message);
+    }
+
+    // Creative SVG Generator fallback if Imagen quota or API is unavailable
+    const fallbackResponse = await ai.models.generateContent({
+      model: "gemini-3.8-flash",
+      contents: `Create a visually stunning, polished SVG graphic illustrating: "${prompt}".
+Requirements:
+1. Valid standalone SVG XML with viewBox="0 0 800 600", width="100%", height="100%".
+2. Rich gradients, modern dark-themed aesthetics, and detailed shapes.
+3. Return ONLY raw SVG code starting with <svg and ending with </svg>. No markdown code blocks, no other text.`,
+      config: {
+        temperature: 0.4,
+      },
+    });
+
+    let svgText = fallbackResponse.text?.trim() || "";
+    svgText = svgText.replace(/^```(svg|xml)?/i, "").replace(/```$/i, "").trim();
+
+    if (svgText.startsWith("<svg") && svgText.endsWith("</svg>")) {
+      const encodedSvg = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
+      res.json({
+        imageUrl: encodedSvg,
+        prompt,
+        source: "haile-vector-art",
+      });
+      return;
+    }
+
+    res.status(500).json({ error: "Failed to generate image artifact." });
+  } catch (error: any) {
+    console.error("Image generation error:", error);
+    res.status(500).json({ error: error?.message || "Failed to generate image." });
+  }
+});
+
+// Prompt Enhancer endpoint
+app.post("/api/enhance-prompt", async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt || !prompt.trim()) {
+    res.status(400).json({ error: "Prompt is required." });
+    return;
+  }
+
+  try {
+    const ai = getGenAIClient();
+    const systemPrompt = `You are the Haile AI Prompt Engineer.
+Given a raw, brief user prompt, optimize and expand it into a high-performance, well-structured, clear prompt.
+Keep the user's original intent intact, but add:
+1. Specific context and objectives
+2. Key constraints, technical nuances, or evaluation criteria
+3. Desired formatting and output structure
+Return ONLY the enhanced prompt text, without any conversational preamble or meta-commentary.`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.8-flash",
+      contents: prompt,
+      config: {
+        systemInstruction: systemPrompt,
+        temperature: 0.5,
+      },
+    });
+
+    res.json({
+      enhancedPrompt: response.text?.trim() || prompt,
+    });
+  } catch (err: any) {
+    res.json({ enhancedPrompt: prompt });
+  }
+});
+
+// Message Rewriter & Translator endpoint
+app.post("/api/rewrite-message", async (req, res) => {
+  const { text, mode, targetLanguage } = req.body;
+  if (!text || !text.trim()) {
+    res.status(400).json({ error: "Text is required." });
+    return;
+  }
+
+  try {
+    const ai = getGenAIClient();
+    let promptInstruction = "";
+
+    switch (mode) {
+      case "translate":
+        promptInstruction = `Translate the following text into ${targetLanguage || "Amharic"}. Maintain natural phrasing, idiomatic accuracy, and emotional tone. Return ONLY the translated text.`;
+        break;
+      case "simplify":
+        promptInstruction = `Rewrite the following text into simple, easy-to-understand language as if explaining to a 10-year-old or non-expert. Retain the core meaning. Return ONLY the rewritten text.`;
+        break;
+      case "executive":
+        promptInstruction = `Rewrite the following text as a high-impact, crisp Executive Summary suitable for a CEO or Board of Directors. Use bullet points and action-oriented takeaways. Return ONLY the rewritten text.`;
+        break;
+      case "technical":
+        promptInstruction = `Rewrite the following text with maximum technical precision, engineering rigor, and algorithmic clarity. Return ONLY the rewritten text.`;
+        break;
+      case "poetic":
+        promptInstruction = `Rewrite the following text with lyrical elegance, evocative metaphors, and inspiring prose. Return ONLY the rewritten text.`;
+        break;
+      default:
+        promptInstruction = `Polish and improve the clarity, conciseness, and impact of the following text. Return ONLY the polished text.`;
+    }
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.8-flash",
+      contents: `${promptInstruction}\n\nText to rewrite:\n${text}`,
+      config: {
+        temperature: 0.5,
+      },
+    });
+
+    res.json({
+      rewrittenText: response.text?.trim() || text,
+    });
+  } catch (err: any) {
+    console.error("Rewrite error:", err);
+    res.status(500).json({ error: "Failed to rewrite message." });
   }
 });
 
