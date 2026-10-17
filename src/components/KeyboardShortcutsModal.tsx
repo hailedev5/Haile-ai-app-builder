@@ -19,6 +19,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
     { key: 'Cmd/Ctrl + Shift + N', description: 'Start a new conversation session' },
     { key: 'Cmd/Ctrl + Shift + S', description: 'Toggle conversation history sidebar' },
     { key: 'Cmd/Ctrl + Shift + C', description: 'Open / Close Canvas Studio workspace' },
+    { key: 'Cmd/Ctrl + Shift + X', description: 'Open 50+ Language Offline Compiler Studio' },
     { key: 'Cmd/Ctrl + Shift + T', description: 'Open Prompt & Workflow Library' },
     { key: 'Cmd/Ctrl + /', description: 'Open this Keyboard Shortcuts cheat sheet' },
     { key: 'Escape', description: 'Close any active modal or dropdown' },

@@ -28,6 +28,7 @@ import { CustomPersonaModal } from './components/CustomPersonaModal';
 import { ConversationStatsModal } from './components/ConversationStatsModal';
 import { ImportBackupModal } from './components/ImportBackupModal';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
+import { CompilerStudioModal } from './components/CompilerStudioModal';
 import { speechManager, soundFX } from './utils/speech';
 
 const STORAGE_KEY_SESSIONS = 'haile_ai_sessions_v2';
@@ -105,6 +106,9 @@ export default function App() {
   const [statsModalOpen, setStatsModalOpen] = useState(false);
   const [importBackupModalOpen, setImportBackupModalOpen] = useState(false);
   const [shortcutsModalOpen, setShortcutsModalOpen] = useState(false);
+  const [compilerModalOpen, setCompilerModalOpen] = useState(false);
+  const [compilerInitialLanguage, setCompilerInitialLanguage] = useState<string>('python');
+  const [compilerInitialCode, setCompilerInitialCode] = useState<string | undefined>(undefined);
 
   const [isStreaming, setIsStreaming] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -158,6 +162,11 @@ export default function App() {
         e.preventDefault();
         setIsCanvasOpen((prev) => !prev);
       }
+      // Cmd/Ctrl + Shift + X: 50+ Language Offline Compiler Studio
+      else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'x') {
+        e.preventDefault();
+        handleOpenCompiler();
+      }
       // Cmd/Ctrl + Shift + T: Templates Library
       else if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 't') {
         e.preventDefault();
@@ -175,6 +184,7 @@ export default function App() {
         setImportBackupModalOpen(false);
         setShortcutsModalOpen(false);
         setCodeRunnerOpen(false);
+        setCompilerModalOpen(false);
       }
     };
 
@@ -745,6 +755,14 @@ export default function App() {
     setCodeRunnerOpen(true);
   };
 
+  // Open 50-Language Offline Compiler
+  const handleOpenCompiler = (language?: string, code?: string) => {
+    if (language) setCompilerInitialLanguage(language);
+    if (code !== undefined) setCompilerInitialCode(code);
+    else setCompilerInitialCode(undefined);
+    setCompilerModalOpen(true);
+  };
+
   // Open snippet in Canvas Studio
   const handleOpenInCanvas = (title: string, content: string, language: string) => {
     setActiveArtifact({
@@ -889,6 +907,7 @@ export default function App() {
         onOpenCustomPersonaModal={() => setCustomPersonaModalOpen(true)}
         onOpenImportModal={() => setImportBackupModalOpen(true)}
         onOpenShortcutsModal={() => setShortcutsModalOpen(true)}
+        onOpenCompiler={() => handleOpenCompiler()}
       />
 
       {/* Main chat workspace */}
@@ -921,6 +940,7 @@ export default function App() {
           onOpenTemplates={() => setTemplateModalOpen(true)}
           onOpenStats={() => setStatsModalOpen(true)}
           onOpenCommandPalette={() => setCommandPaletteOpen(true)}
+          onOpenCompiler={() => handleOpenCompiler()}
         />
 
         {/* Scrollable messages container */}
@@ -943,6 +963,7 @@ export default function App() {
                   onStarToggle={handleStarToggle}
                   onOpenRunner={handleOpenRunner}
                   onOpenInCanvas={handleOpenInCanvas}
+                  onOpenInCompiler={(code, lang) => handleOpenCompiler(lang, code)}
                   onRegenerate={handleRegenerate}
                   onEditUserMessage={handleEditUserMessage}
                   onSwitchAlternative={handleSwitchAlternative}
@@ -990,6 +1011,20 @@ export default function App() {
         language={codeRunnerSnippet.language}
       />
 
+      {/* 50+ Programming Languages Offline Compiler Studio */}
+      <CompilerStudioModal
+        isOpen={compilerModalOpen}
+        onClose={() => setCompilerModalOpen(false)}
+        initialLanguage={compilerInitialLanguage}
+        initialCode={compilerInitialCode}
+        onAskHaile={(code, lang) => {
+          setCompilerModalOpen(false);
+          handleSendMessage(
+            `Please analyze, explain, and review this ${lang} code snippet. Suggest optimizations, edge cases, and best practices:\n\`\`\`${lang.toLowerCase()}\n${code}\n\`\`\``
+          );
+        }}
+      />
+
       {/* AI Image Generation Studio Modal */}
       <ImageGenModal
         isOpen={imageGenModalOpen}
@@ -1030,6 +1065,7 @@ export default function App() {
         deepThinking={deepThinking}
         onOpenTemplates={() => setTemplateModalOpen(true)}
         onOpenCanvas={() => setIsCanvasOpen(true)}
+        onOpenCompiler={() => handleOpenCompiler()}
         onOpenImageGen={() => setImageGenModalOpen(true)}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenShortcuts={() => setShortcutsModalOpen(true)}

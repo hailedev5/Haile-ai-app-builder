@@ -24,6 +24,7 @@ import {
   FileText,
   Music,
   Download,
+  Cpu,
 } from 'lucide-react';
 import { ChatMessage as ChatMessageType, PersonaId, GroundingSource } from '../types';
 import { HAILE_PERSONAS } from '../data/personas';
@@ -37,6 +38,7 @@ interface ChatMessageProps {
   onStarToggle?: (id: string) => void;
   onOpenRunner?: (code: string, language: string) => void;
   onOpenInCanvas?: (title: string, content: string, language: string) => void;
+  onOpenInCompiler?: (code: string, language: string) => void;
   onRegenerate?: (messageId: string) => void;
   onEditUserMessage?: (messageId: string, newContent: string) => void;
   onSwitchAlternative?: (messageId: string, direction: 'prev' | 'next') => void;
@@ -49,6 +51,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   onStarToggle,
   onOpenRunner,
   onOpenInCanvas,
+  onOpenInCompiler,
   onRegenerate,
   onEditUserMessage,
   onSwitchAlternative,
@@ -581,6 +584,17 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
                                   >
                                     <FileCode className="w-3 h-3" />
                                     <span>Canvas</span>
+                                  </button>
+                                )}
+                                {onOpenInCompiler && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onOpenInCompiler(codeString, lang)}
+                                    className="flex items-center gap-1 text-zinc-400 hover:text-amber-300 text-[11px] px-1.5 py-0.5 rounded hover:bg-zinc-800"
+                                    title="Run in 50-Language Offline Compiler"
+                                  >
+                                    <Cpu className="w-3 h-3" />
+                                    <span>Compiler (50+)</span>
                                   </button>
                                 )}
                                 <button

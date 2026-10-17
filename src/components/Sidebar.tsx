@@ -17,6 +17,7 @@ import {
   HelpCircle,
   Hash,
   UserPlus,
+  Cpu,
 } from 'lucide-react';
 import { ChatSession, PersonaId } from '../types';
 import { HaileLogo } from './HaileLogo';
@@ -37,6 +38,7 @@ interface SidebarProps {
   onOpenCustomPersonaModal?: () => void;
   onOpenImportModal?: () => void;
   onOpenShortcutsModal?: () => void;
+  onOpenCompiler?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -54,6 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenCustomPersonaModal,
   onOpenImportModal,
   onOpenShortcutsModal,
+  onOpenCompiler,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string>('All');
@@ -377,6 +380,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Bottom Footer & Navigation */}
         <div className="p-3 border-t border-zinc-850 bg-zinc-950/90 space-y-2">
+          {onOpenCompiler && (
+            <button
+              type="button"
+              onClick={onOpenCompiler}
+              className="w-full flex items-center justify-between p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/30 text-[11px] text-amber-300 transition-colors font-medium"
+            >
+              <div className="flex items-center gap-2">
+                <Cpu className="w-3.5 h-3.5 text-amber-400" />
+                <span>50-Lang Compiler</span>
+              </div>
+              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300">
+                Offline
+              </span>
+            </button>
+          )}
+
           <div className="grid grid-cols-2 gap-1.5">
             <button
               type="button"

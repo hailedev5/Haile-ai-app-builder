@@ -15,6 +15,7 @@ import {
   BarChart3,
   Search,
   Zap,
+  Cpu,
 } from 'lucide-react';
 import { PersonaId, ChatSession, GeminiModelId } from '../types';
 import { HAILE_PERSONAS } from '../data/personas';
@@ -38,6 +39,7 @@ interface ChatHeaderProps {
   onOpenTemplates: () => void;
   onOpenStats: () => void;
   onOpenCommandPalette: () => void;
+  onOpenCompiler: () => void;
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -58,6 +60,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onOpenTemplates,
   onOpenStats,
   onOpenCommandPalette,
+  onOpenCompiler,
 }) => {
   const [showPersonaMenu, setShowPersonaMenu] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -139,6 +142,20 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         >
           <FileCode className="w-3.5 h-3.5" />
           <span className="hidden md:inline">Canvas</span>
+        </button>
+
+        {/* 50-Language Offline Compiler Button */}
+        <button
+          type="button"
+          onClick={onOpenCompiler}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-medium transition-colors"
+          title="Open 50-Language Offline Compiler Studio"
+        >
+          <Cpu className="w-3.5 h-3.5 text-amber-400" />
+          <span className="hidden sm:inline">Compiler</span>
+          <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-amber-400 text-zinc-950">
+            50+
+          </span>
         </button>
 
         {/* Persona quick switch dropdown */}

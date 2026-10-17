@@ -38,6 +38,7 @@ interface CommandPaletteProps {
   onOpenImageGen: () => void;
   onOpenSettings: () => void;
   onOpenShortcuts: () => void;
+  onOpenCompiler: () => void;
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
@@ -58,6 +59,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onOpenImageGen,
   onOpenSettings,
   onOpenShortcuts,
+  onOpenCompiler,
 }) => {
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -83,6 +85,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       icon: Plus,
       action: () => onNewSession(),
       badge: 'Action',
+    },
+    {
+      id: 'cmd-compiler',
+      label: '50-Language Offline Compiler',
+      description: 'Compile & run Python, C, C++, Rust, Go, SQL & 50+ languages offline',
+      icon: Cpu,
+      action: () => onOpenCompiler(),
+      badge: '50+ Langs',
     },
     {
       id: 'cmd-templates',
