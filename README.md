@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1200&color=A855F7&center=true&vCenter=true&random=false&width=700&height=50&lines=%E2%9A%A1+Next-Gen+Multimodal+AI+Superstation;%F0%9F%92%BB+52%2B+Polyglot+Offline+Compiler+Studio;%F0%9F%8E%A8+Interactive+Live+Canvas+%26+Artifacts+Engine;%F0%9F%A7%A0+Gemini+2.5+Pro%2C+Flash+%26+Deep+Thinking+Mode;%F0%9F%8E%A8+Google+Imagen+3+Studio+%2B+Aspect+Ratio+Control;%F0%9F%8E%99%EF%B8%8F+Real-Time+Voice+Dictation+%26+Neural+TTS;%F0%9F%93%8A+Interactive+Mermaid+Diagram+Visualization;%F0%9F%9B%A1%EF%B8%8F+100%25+Private%2C+Zero+Telemetry%2C+Offline+Ready" alt="Typing Animation" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1200&color=A855F7&center=true&vCenter=true&random=false&width=700&height=50&lines=%E2%9A%A1+Next-of+Multimodal+AI+Superstation;%F0%9F%92%BB+52%2B+Polyglot+Offline+Compiler+Studio;%F0%9F%8E%A8+Interactive+Live+Canvas+%26+Artifacts+Engine;%F0%9F%A7%A0+Gemini+2.5+Pro%2C+Flash+%26+Deep+Thinking+Mode;%F0%9F%8E%A8+Google+Imagen+3+Studio+%2B+Aspect+Ratio+Control;%F0%9F%8E%99%EF%B8%8F+Real-Time+Voice+Dictation+%26+Neural+TTS;%F0%9F%93%8A+Interactive+Mermaid+Diagram+Visualization;%F0%9F%9B%A1%EF%B8%8F+100%25+Private%2C+Zero+Telemetry%2C+Offline+Ready" alt="Typing Animation" />
   </a>
 </p>
 
@@ -460,5 +460,5 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more informa
 <div align="center">
   Crafted with ❤️ by <strong>Haile</strong> • Designed for the Builders of Tomorrow
   <br/><br/>
-  <a href="https://github.com/hailedev5/haile-ai">⭐ Star this repository if you find it helpful!</a>
+  <a href="https://github.com/hailedev5/haile-ai-app-builder">⭐ Star this repository if you find it helpful!</a>
 </div>
