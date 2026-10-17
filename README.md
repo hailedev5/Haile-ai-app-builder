@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1200&color=A855F7&center=true&vCenter=true&random=false&width=700&height=50&lines=%E2%9A%A1+Next-of+Multimodal+AI+Superstation;%F0%9F%92%BB+52%2B+Polyglot+Offline+Compiler+Studio;%F0%9F%8E%A8+Interactive+Live+Canvas+%26+Artifacts+Engine;%F0%9F%A7%A0+Gemini+2.5+Pro%2C+Flash+%26+Deep+Thinking+Mode;%F0%9F%8E%A8+Google+Imagen+3+Studio+%2B+Aspect+Ratio+Control;%F0%9F%8E%99%EF%B8%8F+Real-Time+Voice+Dictation+%26+Neural+TTS;%F0%9F%93%8A+Interactive+Mermaid+Diagram+Visualization;%F0%9F%9B%A1%EF%B8%8F+100%25+Private%2C+Zero+Telemetry%2C+Offline+Ready" alt="Typing Animation" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1200&color=A855F7&center=true&vCenter=true&random=false&width=700&height=50&lines=%E2%9A%A1+Next-of+Multimodal+AI+Superstation;%F0%9F%92%BB+52%2B+Polyglot+Offline+Compiler+Studio;%F0%9F%8E%A8+Interactive+Live+Canvas+%26+Artifacts+Engine;%F0%9F%A7%A0+Gemini+2.5+Pro%2C+Flash+%26+Deep+Thinking+Mode;%F0%9F%8E%A8+Google+Imagen+3+Studio+%2B+Aspect+Ratio+Control;%F0%9F%8E%99%EF%B8%8F+Real-Time+Voice+Dictation+%26+Neural+TTS;%F0%9F%93 %8A+Interactive+Mermaid+Diagram+Visualization;%F0%9F%9B%A1%EF%B8%8F+100%25+Private%2C+Zero+Telemetry%2C+Offline+Ready" alt="Typing Animation" />
   </a>
 </p>
 
@@ -71,7 +71,6 @@
 
 </td>
 <td width="50%" valign="top">
-
 ### 🧠 Gemini 2.5 Multi-Model Engine
 - **Gemini 2.5 Flash**: Sub-second responses for chats, code explanations, refactoring, and translations.
 - **Gemini 2.5 Pro**: Complex problem-solving, algorithm synthesis, and multi-file architecture design.
@@ -312,8 +311,8 @@ Work at the speed of thought with full keyboard navigation:
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/hailedev5/haile-ai.git
-cd haile-ai
+git clone https://github.com/hailedev5/haile-ai-app-builder.git
+cd haile-ai-app-builder
 ```
 
 ### 3. Install Dependencies
@@ -439,7 +438,7 @@ Proxies requests to Google Imagen 3 with custom aspect ratios (`1:1`, `16:9`, `9
 
 Contributions, bug reports, and feature suggestions are warmly welcomed!
 
-1. Fork the Project (`https://github.com/hailedev5/haile-ai/fork`)
+1. Fork the Project (`https://github.com/hailedev5/haile-ai-app-builder/fork`)
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your Changes (`git commit -m 'feat: Add AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
@@ -458,7 +457,7 @@ Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more informa
 </p>
 
 <div align="center">
-  Crafted with ❤️ by <strong>Haile</strong> • Designed for the Builders of Tomorrow
+  Crafted with ❤️ by <strong>Hailemariam</strong> • Designed for the Builders of Tomorrow
   <br/><br/>
   <a href="https://github.com/hailedev5/haile-ai-app-builder">⭐ Star this repository if you find it helpful!</a>
 </div>
